@@ -12,7 +12,7 @@ Django REST Framework JSON CamelCase
     :target: https://img.shields.io/pypi/v/djangorestframework-camel-case.svg
 
 
-Camel case JSON support for Django REST framework.
+Camel case JSON support for Django REST framework (json parser, form parser, multipart parser).
 
 ============
 Installation
@@ -37,6 +37,7 @@ Add the render and parser to your django settings file.
         'DEFAULT_PARSER_CLASSES': (
             'djangorestframework_camel_case.parser.CamelCaseJSONParser',
             'djangorestframework_camel_case.parser.CamelCaseFormParser',
+            'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
             # Any other parsers
         ),
     }

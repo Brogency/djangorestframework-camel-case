@@ -1,30 +1,29 @@
 # -*- coding: utf-8 -*-
-import json
-
 from rest_framework import parsers
-from rest_framework.parsers import ParseError, six
-from django.http import QueryDict
-from django.conf import settings
 
 from djangorestframework_camel_case.util import underscoreize
 
 
 class CamelCaseFormParser(parsers.FormParser):
     def parse(self, stream, media_type=None, parser_context=None):
-        parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-
-        data = QueryDict(stream.read(), encoding=encoding)
+        data = super(CamelCaseFormParser, self).parse(
+            stream, media_type=media_type, parser_context=parser_context)
         return underscoreize(data)
+
+
+class CamelCaseMultiPartParser(parsers.MultiPartParser):
+    def parse(self, stream, media_type=None, parser_context=None):
+        data_and_files = super(CamelCaseMultiPartParser, self).parse(
+            stream, media_type=media_type, parser_context=parser_context)
+        data_and_files.data = underscoreize(data_and_files.data)
+        data_and_files.files = underscoreize(data_and_files.files)
+
+        return data_and_files
 
 
 class CamelCaseJSONParser(parsers.JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
-        parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        data = super(CamelCaseJSONParser, self).parse(
+            stream, media_type=media_type, parser_context=parser_context)
 
-        try:
-            data = stream.read().decode(encoding)
-            return underscoreize(json.loads(data))
-        except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % six.text_type(exc))
+        return underscoreize(data)
